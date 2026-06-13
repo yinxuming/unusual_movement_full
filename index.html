@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>股票异动监控系统</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <header class="header">
+        <h1 class="header-title">股票异动监控系统</h1>
+        <div class="header-actions">
+            <span id="dataDate" class="data-date"></span>
+            <button id="btnRefresh" class="btn btn-primary" title="刷新数据">刷新</button>
+            <button id="btnSettings" class="btn btn-secondary" title="设置">设置</button>
+        </div>
+    </header>
+
+    <!-- 统计概览 -->
+    <section class="summary">
+        <div class="summary-item">
+            <span class="summary-label">100异动风险</span>
+            <span id="count100" class="summary-value tag-100">0</span>
+            <span class="summary-unit">只</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">200异动风险</span>
+            <span id="count200" class="summary-value tag-200">0</span>
+            <span class="summary-unit">只</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">监控数量</span>
+            <span id="countTotal" class="summary-value">0</span>
+            <span class="summary-unit">只</span>
+        </div>
+    </section>
+
+    <!-- 加载状态 -->
+    <div id="loading" class="loading" style="display:none;">
+        <div class="loading-spinner"></div>
+        <span id="loadingText">正在加载数据...</span>
+    </div>
+
+    <!-- 错误提示 -->
+    <div id="error" class="error" style="display:none;">
+        <span id="errorText"></span>
+        <button id="btnRetry" class="btn btn-primary btn-sm">重试</button>
+    </div>
+
+    <!-- 数据表格 -->
+    <section id="tableSection" class="table-section">
+        <div class="table-wrapper">
+            <table id="stockTable" class="stock-table">
+                <thead>
+                    <tr>
+                        <th class="col-rank">#</th>
+                        <th class="col-name" data-sort="name">名称</th>
+                        <th class="col-code">代码</th>
+                        <th class="col-date">日期</th>
+                        <th class="col-change" data-sort="change">当前幅度</th>
+                        <th class="col-tag">异动类型</th>
+                        <th class="col-trigger" data-sort="trigger0">当日触发</th>
+                        <th class="col-trigger" data-sort="trigger1">T+1触发</th>
+                        <th class="col-trigger" data-sort="trigger2">T+2触发</th>
+                        <th class="col-trigger" data-sort="trigger3">T+3触发</th>
+                        <th class="col-trigger" data-sort="trigger4">T+4触发</th>
+                    </tr>
+                </thead>
+                <tbody id="stockTableBody">
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 设置面板 -->
+    <div id="settingsPanel" class="settings-panel" style="display:none;">
+        <div class="settings-overlay"></div>
+        <div class="settings-content">
+            <h3>监控设置</h3>
+            <div class="settings-group">
+                <label for="settingTopN">监控数量（TOP N）</label>
+                <input type="number" id="settingTopN" min="10" max="500" value="100">
+            </div>
+            <div class="settings-group">
+                <label for="settingForwardDays">提前天数</label>
+                <input type="number" id="settingForwardDays" min="1" max="10" value="5">
+            </div>
+            <div class="settings-group">
+                <label for="settingAutoRefresh">自动刷新（秒，0=关闭）</label>
+                <input type="number" id="settingAutoRefresh" min="0" max="600" value="300">
+            </div>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="settingOnlyRisk" checked>
+                    仅显示有异动风险的股票
+                </label>
+            </div>
+            <div class="settings-actions">
+                <button id="btnSaveSettings" class="btn btn-primary">保存</button>
+                <button id="btnCancelSettings" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部信息 -->
+    <footer class="footer">
+        <span>数据来源：东方财富 | 异动规则：10天100% / 30天200%（严重异常波动，适用全A股）</span>
+    </footer>
+
+    <script src="js/api.js?v=2"></script>
+    <script src="js/calculator.js?v=2"></script>
+    <script src="js/renderer.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+</body>
+</html>
