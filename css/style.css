@@ -10,6 +10,8 @@ body {
     background-color: #0f172a;
     color: #e2e8f0;
     min-height: 100vh;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 /* ===== 顶部栏 ===== */
@@ -17,7 +19,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
+    padding: 16px 32px;
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     border-bottom: 1px solid #334155;
 }
@@ -84,7 +86,7 @@ body {
 .summary {
     display: flex;
     gap: 32px;
-    padding: 14px 24px;
+    padding: 14px 32px;
     background: #1e293b;
     border-bottom: 1px solid #334155;
 }
@@ -173,18 +175,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 24px 32px;
     gap: 12px;
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
     border-radius: 8px;
-    margin: 24px;
+    margin: 24px 32px;
     color: #fca5a5;
 }
 
 /* ===== 表格区域 ===== */
 .table-section {
-    padding: 0 24px 24px;
+    padding: 0 32px 24px;
 }
 
 .table-wrapper {
@@ -195,6 +197,7 @@ body {
 
 .stock-table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     font-size: 13px;
 }
@@ -210,10 +213,13 @@ body {
     color: #94a3b8;
     font-weight: 600;
     text-align: center;
-    padding: 10px 8px;
+    padding: 8px 4px;
     border-bottom: 2px solid #334155;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     user-select: none;
+    font-size: 12px;
 }
 
 .stock-table th[data-sort] {
@@ -225,20 +231,23 @@ body {
 }
 
 .stock-table th.sort-asc::after {
-    content: " ▲";
+    content: " \25B2";
     font-size: 10px;
 }
 
 .stock-table th.sort-desc::after {
-    content: " ▼";
+    content: " \25BC";
     font-size: 10px;
 }
 
 .stock-table td {
-    padding: 10px 8px;
+    padding: 8px 4px;
     text-align: center;
     border-bottom: 1px solid #1e293b;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
 }
 
 .stock-table tbody tr {
@@ -257,14 +266,44 @@ body {
     background: rgba(59, 130, 246, 0.12);
 }
 
-/* 列宽 */
-.col-rank { width: 40px; }
-.col-name { text-align: left !important; min-width: 90px; }
-.col-code { width: 80px; color: #64748b; }
-.col-date { width: 80px; color: #64748b; }
-.col-change { width: 80px; }
-.col-tag { width: 140px; }
-.col-trigger { width: 80px; }
+/* 列宽 (table-layout: fixed, 按比例分配) */
+.col-rank { width: 3%; }
+.col-name { width: 8%; text-align: left !important; }
+.col-code { width: 7%; color: #64748b; }
+.col-date { width: 6%; color: #64748b; }
+.col-change { width: 8%; }
+.col-tag { width: 7%; }
+.col-deviation { width: 13%; font-size: 11px; color: #cbd5e1; }
+.col-triggered { width: 6%; }
+.col-trigger { width: 7.5%; }
+
+/* ===== 板块颜色区分 ===== */
+.board-cy {
+    color: #c084fc !important;  /* 创业板 - 紫色 */
+    font-weight: 500;
+}
+
+.board-kc {
+    color: #38bdf8 !important;  /* 科创板 - 天蓝色 */
+    font-weight: 500;
+}
+
+.board-bz {
+    color: #fb923c !important;  /* 北证 - 橙色 */
+    font-weight: 500;
+}
+
+/* ===== 股票代码超链接 ===== */
+.code-link {
+    color: #60a5fa;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.code-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
 
 /* ===== 涨跌幅颜色 ===== */
 .change-up {
@@ -299,6 +338,34 @@ body {
 .trigger-triggered {
     color: #64748b;
     font-style: italic;
+}
+
+.trigger-impossible {
+    color: #334155;
+    text-decoration: line-through;
+}
+
+/* ===== 是否触发标签 ===== */
+.tag-triggered-yes {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.tag-triggered-no {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(100, 116, 139, 0.15);
+    color: #64748b;
+    border: 1px solid rgba(100, 116, 139, 0.3);
 }
 
 /* ===== 设置面板 ===== */
@@ -369,6 +436,46 @@ body {
     margin-right: 6px;
 }
 
+.settings-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 13px;
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.settings-group textarea:focus {
+    border-color: #3b82f6;
+}
+
+.settings-divider {
+    border: none;
+    border-top: 1px solid #334155;
+    margin: 20px 0 16px;
+}
+
+.settings-subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.settings-hint {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.settings-hint span {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
 .settings-actions {
     display: flex;
     gap: 12px;
@@ -403,7 +510,7 @@ body {
     }
 
     .table-section {
-        padding: 0 8px 16px;
+        padding: 0 12px 16px;
     }
 
     .stock-table {

@@ -1,269 +1,412 @@
 /**
  * 东方财富API封装模块
- * 统一使用JSONP方式调用东方财富API（浏览器直接请求，不受CORS限制）
- * API不可用时自动降级到模拟数据
+ *
+ * 数据获取策略：
+ * 1. 用clist API获取阶段涨幅排行（5日涨幅TOP50 + 当日涨幅TOP50）
+ * 2. 合并去重后，只对少量候选股票请求K线数据
+ * 3. 用K线数据精确计算10日/30日涨幅和异动触发值
+ *
+ * 请求方式：所有请求走代理（主代理 → 备用代理自动切换）
+ * 识别结果缓存：当日生效，点击刷新可清空缓存强制刷新
  */
 const StockAPI = (function () {
 
-    // 东方财富API地址（浏览器端直接调用，JSONP方式）
+    // ===== 东方财富API地址 =====
     const CLIST_BASE = 'https://push2.eastmoney.com/api/qt/clist/get';
     const KLINE_BASE = 'https://push2his.eastmoney.com/api/qt/stock/kline/get';
 
     // 东方财富API公共参数
     const UT = 'b2884a393a59ad64002292a3e90d46a5';
 
-    // 是否使用模拟数据（API不可用时自动启用）
-    let useMock = false;
+    // A股市场筛选条件（沪深京A股，排除ST）
+    const FS_A_SHARE = 'm:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23';
 
-    /**
-     * 通用请求方法：JSONP优先，fetch降级，模拟数据兜底
-     * @param {string} url - 完整请求URL
-     * @param {number} timeout - 超时时间(ms)
-     * @returns {Promise<any>} API响应数据
-     */
-    async function request(url, timeout = 15000) {
-        if (useMock) {
-            return mockRequest(url);
-        }
+    // ===== 代理配置 =====
+    const PROXY_CONFIG = {
+        primaryUrl: 'https://vercel-proxy-p.vercel.app',
+        backupUrls: ['https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com'],
+        token: '',
+        currentProxyIndex: -1,
+        proxyFailCount: 0,
+        failThreshold: 3
+    };
 
+    // ===== 请求频率控制 =====
+    let requestInterval = 500; // 每个请求之间的间隔(ms)，默认500ms，避免东方财富限流
+
+    // ===== 缓存配置 =====
+    const KLINE_CACHE_PREFIX = 'unusual_kline_';
+    const RESULT_CACHE_KEY = 'unusual_result';
+    const CACHE_TTL = 4 * 60 * 60 * 1000; // 缓存4小时（覆盖整个交易时段）
+
+    // ===== 代理配置持久化 =====
+
+    /** 从localStorage加载代理配置 */
+    function loadProxyConfig() {
         try {
-            // 优先使用JSONP（东方财富API支持cb参数，浏览器直接请求不受CORS限制）
-            return await jsonp(url, timeout);
-        } catch (jsonpError) {
-            console.log('JSONP失败，尝试fetch:', jsonpError.message);
-            try {
-                const resp = await fetchWithTimeout(url, timeout);
-                if (!resp.ok) {
-                    throw new Error(`API请求失败(HTTP ${resp.status})`);
-                }
-                return await resp.json();
-            } catch (fetchError) {
-                // JSONP和fetch都失败，切换到模拟模式
-                console.warn('API请求失败，切换到模拟数据模式:', fetchError.message);
-                useMock = true;
-                return mockRequest(url);
+            const saved = localStorage.getItem('unusual_proxy');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.primaryUrl !== undefined) PROXY_CONFIG.primaryUrl = data.primaryUrl;
+                if (data.backupUrls !== undefined) PROXY_CONFIG.backupUrls = data.backupUrls;
+                if (data.token !== undefined) PROXY_CONFIG.token = data.token;
             }
+        } catch (e) {
+            console.warn('加载代理配置失败:', e);
         }
     }
 
+    /** 保存代理配置到localStorage */
+    function saveProxyConfig() {
+        try {
+            localStorage.setItem('unusual_proxy', JSON.stringify({
+                primaryUrl: PROXY_CONFIG.primaryUrl,
+                backupUrls: PROXY_CONFIG.backupUrls,
+                token: PROXY_CONFIG.token
+            }));
+        } catch (e) {
+            console.warn('保存代理配置失败:', e);
+        }
+    }
+
+    /** 获取代理配置 */
+    function getProxyConfig() {
+        return {
+            primaryUrl: PROXY_CONFIG.primaryUrl,
+            backupUrls: [...PROXY_CONFIG.backupUrls],
+            token: PROXY_CONFIG.token
+        };
+    }
+
+    /** 更新代理配置 */
+    function setProxyConfig(config) {
+        if (config.primaryUrl !== undefined) PROXY_CONFIG.primaryUrl = config.primaryUrl;
+        if (config.backupUrls !== undefined) PROXY_CONFIG.backupUrls = config.backupUrls;
+        if (config.token !== undefined) PROXY_CONFIG.token = config.token;
+        PROXY_CONFIG.currentProxyIndex = -1;
+        PROXY_CONFIG.proxyFailCount = 0;
+        saveProxyConfig();
+    }
+
+    // ===== 请求方法（只走代理） =====
+
     /**
-     * 带超时的fetch请求
+     * 通用请求方法（只走代理）
+     * 代理失败时自动切换备用代理重试
      */
-    function fetchWithTimeout(url, timeout) {
+    async function request(url, timeout = 15000) {
+        // 最多尝试所有代理一轮
+        const maxAttempts = 1 + PROXY_CONFIG.backupUrls.length;
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                const data = await proxyRequest(url, timeout);
+                PROXY_CONFIG.proxyFailCount = 0;
+                return data;
+            } catch (proxyError) {
+                PROXY_CONFIG.proxyFailCount++;
+                console.warn(`代理请求失败(第${attempt + 1}次):`, proxyError.message);
+                if (PROXY_CONFIG.proxyFailCount >= PROXY_CONFIG.failThreshold) {
+                    switchToNextProxy();
+                }
+            }
+        }
+        throw new Error('所有代理均请求失败');
+    }
+
+    /**
+     * 通过代理发送请求
+     * 代理URL格式：{proxyUrl}/proxy?target={encodedTargetUrl}
+     */
+    async function proxyRequest(targetUrl, timeout = 15000) {
+        const proxyUrl = getCurrentProxyUrl();
+        if (!proxyUrl) throw new Error('无可用代理');
+
+        const base = proxyUrl.replace(/\/+$/, '');
+        const fullUrl = base + '/proxy?target=' + encodeURIComponent(targetUrl);
+
+        const headers = { 'Accept': 'application/json' };
+        if (PROXY_CONFIG.token) headers['X-Proxy-Token'] = PROXY_CONFIG.token;
+
+        const resp = await fetchWithTimeout(fullUrl, timeout, headers);
+        if (!resp.ok) throw new Error(`代理返回HTTP ${resp.status}`);
+
+        const data = await resp.json();
+        if (data && data.error && (!data.success || data.success === false)) {
+            throw new Error('代理错误: ' + (data.message || data.error));
+        }
+        return data;
+    }
+
+    /** 获取当前代理URL */
+    function getCurrentProxyUrl() {
+        const idx = PROXY_CONFIG.currentProxyIndex;
+        if (idx === -1) return PROXY_CONFIG.primaryUrl;
+        if (idx < PROXY_CONFIG.backupUrls.length) return PROXY_CONFIG.backupUrls[idx];
+        PROXY_CONFIG.currentProxyIndex = -1;
+        return PROXY_CONFIG.primaryUrl;
+    }
+
+    /** 切换到下一个代理 */
+    function switchToNextProxy() {
+        PROXY_CONFIG.proxyFailCount = 0;
+        const nextIndex = PROXY_CONFIG.currentProxyIndex + 1;
+        if (nextIndex < PROXY_CONFIG.backupUrls.length) {
+            PROXY_CONFIG.currentProxyIndex = nextIndex;
+            console.log(`切换到备用代理${nextIndex + 1}: ${PROXY_CONFIG.backupUrls[nextIndex]}`);
+        } else {
+            PROXY_CONFIG.currentProxyIndex = -1;
+            console.log('所有代理均已尝试，回到主代理');
+        }
+    }
+
+    /** 带超时的fetch */
+    function fetchWithTimeout(url, timeout, headers = {}) {
         return Promise.race([
-            fetch(url),
-            new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('fetch超时')), timeout)
-            )
+            fetch(url, { headers }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('请求超时')), timeout))
         ]);
     }
 
-    /**
-     * JSONP请求封装
-     * 东方财富API支持cb参数，回调名需以jQuery开头
-     */
-    function jsonp(url, timeout = 15000) {
-        return new Promise((resolve, reject) => {
-            // 东方财富API要求回调名以jQuery开头
-            const callbackName = 'jQuery_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-            const script = document.createElement('script');
-            const timer = setTimeout(() => {
-                cleanup();
-                reject(new Error('JSONP请求超时'));
-            }, timeout);
+    // ===== 识别结果缓存 =====
 
-            function cleanup() {
-                clearTimeout(timer);
-                delete window[callbackName];
-                if (script.parentNode) {
-                    script.parentNode.removeChild(script);
+    /**
+     * 获取缓存的识别结果
+     * @returns {Array|null} 缓存的分析结果，过期或不存在返回null
+     */
+    function getResultCache() {
+        try {
+            const raw = localStorage.getItem(RESULT_CACHE_KEY);
+            if (!raw) return null;
+
+            const cache = JSON.parse(raw);
+            const now = Date.now();
+
+            // 检查缓存是否过期
+            if (now - cache.timestamp > CACHE_TTL) {
+                localStorage.removeItem(RESULT_CACHE_KEY);
+                return null;
+            }
+
+            // 检查是否同一天（跨天缓存失效）
+            const cacheDate = new Date(cache.timestamp).toDateString();
+            const today = new Date().toDateString();
+            if (cacheDate !== today) {
+                localStorage.removeItem(RESULT_CACHE_KEY);
+                return null;
+            }
+
+            return cache.data;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
+     * 写入识别结果缓存
+     * @param {Array} results - 分析结果数组
+     */
+    function setResultCache(results) {
+        try {
+            const cache = {
+                data: results,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(RESULT_CACHE_KEY, JSON.stringify(cache));
+        } catch (e) {
+            console.warn('结果缓存写入失败:', e.message);
+        }
+    }
+
+    /**
+     * 清除所有缓存（K线缓存 + 结果缓存）
+     * 点击刷新时调用
+     */
+    function clearAllCache() {
+        try {
+            // 清除K线缓存
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith(KLINE_CACHE_PREFIX) || key === RESULT_CACHE_KEY)) {
+                    keysToRemove.push(key);
                 }
             }
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            console.log('已清除' + keysToRemove.length + '条缓存');
+        } catch (e) {
+            console.warn('清除缓存失败:', e.message);
+        }
+    }
 
-            window[callbackName] = function (data) {
-                cleanup();
-                resolve(data);
+    // ===== K线缓存 =====
+
+    /**
+     * 从localStorage读取K线缓存
+     * @param {string} secid - 股票ID
+     * @returns {Array|null} 缓存的K线数据，过期或不存在返回null
+     */
+    function getKlineCache(secid) {
+        try {
+            const key = KLINE_CACHE_PREFIX + secid;
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+
+            const cache = JSON.parse(raw);
+            const now = Date.now();
+
+            if (now - cache.timestamp > CACHE_TTL) {
+                localStorage.removeItem(key);
+                return null;
+            }
+
+            // 跨天失效
+            const cacheDate = new Date(cache.timestamp).toDateString();
+            const today = new Date().toDateString();
+            if (cacheDate !== today) {
+                localStorage.removeItem(key);
+                return null;
+            }
+
+            return cache.data;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
+     * 写入K线缓存到localStorage
+     * @param {string} secid - 股票ID
+     * @param {Array} klines - K线数据
+     */
+    function setKlineCache(secid, klines) {
+        try {
+            const key = KLINE_CACHE_PREFIX + secid;
+            const cache = {
+                data: klines,
+                timestamp: Date.now()
             };
-
-            const separator = url.includes('?') ? '&' : '?';
-            script.src = url + separator + 'cb=' + callbackName;
-            script.onerror = function () {
-                cleanup();
-                reject(new Error('JSONP脚本加载失败'));
-            };
-            document.head.appendChild(script);
-        });
-    }
-
-    // ===== 模拟数据 =====
-
-    /**
-     * 模拟请求（API不可用时使用）
-     */
-    function mockRequest(url) {
-        if (url.includes('clist/get')) {
-            return Promise.resolve(generateMockStockList());
+            localStorage.setItem(key, JSON.stringify(cache));
+        } catch (e) {
+            console.warn('K线缓存写入失败:', e.message);
         }
-        if (url.includes('kline/get')) {
-            const secid = extractParam(url, 'secid') || '0.300999';
-            return Promise.resolve(generateMockKline(secid));
-        }
-        return Promise.resolve({});
     }
 
-    /**
-     * 从URL中提取参数值
-     */
-    function extractParam(url, param) {
-        const match = url.match(new RegExp(param + '=([^&]+)'));
-        return match ? match[1] : null;
-    }
+    // ===== 业务API方法 =====
 
     /**
-     * 生成模拟涨幅排行数据
+     * 获取阶段涨幅候选股票（核心优化：减少K线请求量）
+     * 策略：分别获取5日涨幅TOP50和当日涨幅TOP50，合并去重
+     * @param {number} topN - 每个榜单获取数量
+     * @returns {Promise<Array>} 候选股票列表（含5日涨幅）
      */
-    function generateMockStockList() {
-        const mockStocks = [
-            { code: '301323', name: '新莱福', market: 0 },
-            { code: '300377', name: '赢时胜', market: 0 },
-            { code: '688163', name: '赛伦生物', market: 1 },
-            { code: '301176', name: '逸豪新材', market: 0 },
-            { code: '688010', name: '福光股份', market: 1 },
-            { code: '000001', name: '平安银行', market: 0 },
-            { code: '600519', name: '贵州茅台', market: 1 },
-            { code: '300048', name: '金力泰', market: 0 },
-            { code: '688088', name: '虹软科技', market: 1 },
-            { code: '301269', name: '华大九天', market: 0 },
-            { code: '300750', name: '宁德时代', market: 0 },
-            { code: '688981', name: '中芯国际', market: 1 },
-            { code: '000651', name: '格力电器', market: 0 },
-            { code: '600036', name: '招商银行', market: 1 },
-            { code: '300760', name: '迈瑞医疗', market: 0 },
-        ];
+    async function getCandidateStocks(topN = 50) {
+        try {
+            // 1. 获取5日涨幅排行 TOP50
+            const gain5dUrl = CLIST_BASE +
+                '?pn=1&pz=' + topN + '&po=1&np=1' +
+                '&ut=' + UT +
+                '&fltt=2&invt=2' +
+                '&fid=f127' +  // 按5日涨幅排序
+                '&fs=' + FS_A_SHARE +
+                '&fields=f12,f14,f2,f3,f13,f127' +
+                '&_t=' + Date.now();
 
-        return {
-            data: {
-                total: mockStocks.length,
-                diff: mockStocks.map((s, i) => ({
-                    f12: s.code,
-                    f14: s.name,
-                    f2: (20 + Math.random() * 80).toFixed(2),
-                    f3: (20 - i * 1.2 + Math.random() * 2).toFixed(2),
-                    f13: s.market
-                }))
+            // 2. 获取当日涨幅排行 TOP50
+            const todayUrl = CLIST_BASE +
+                '?pn=1&pz=' + topN + '&po=1&np=1' +
+                '&ut=' + UT +
+                '&fltt=2&invt=2' +
+                '&fid=f3' +  // 按当日涨幅排序
+                '&fs=' + FS_A_SHARE +
+                '&fields=f12,f14,f2,f3,f13,f127' +
+                '&_t=' + Date.now();
+
+            // 并行请求两个榜单
+            const [gain5dData, todayData] = await Promise.all([
+                request(gain5dUrl).catch(e => {
+                    console.warn('5日涨幅排行请求失败:', e.message);
+                    return null;
+                }),
+                request(todayUrl).catch(e => {
+                    console.warn('当日涨幅排行请求失败:', e.message);
+                    return null;
+                })
+            ]);
+
+            // 合并去重
+            const stockMap = new Map();
+
+            // 处理5日涨幅排行
+            if (gain5dData && gain5dData.data && gain5dData.data.diff) {
+                gain5dData.data.diff.forEach((item, index) => {
+                    const code = item.f12;
+                    const gain5d = parseFloat(item.f127) || 0;
+                    // 5日涨幅>15%的进入候选（放宽门槛：部分股票如莱伯泰科等涨幅较低但已接近异动线）
+                    if (gain5d >= 15 && !stockMap.has(code)) {
+                        stockMap.set(code, {
+                            code: code,
+                            name: item.f14,
+                            price: parseFloat(item.f2) || 0,
+                            changePercent: parseFloat(item.f3) || 0,
+                            market: item.f13,
+                            secid: item.f13 + '.' + code,
+                            gain5d: gain5d,
+                            source: '5日涨幅榜'
+                        });
+                    }
+                });
             }
-        };
+
+            // 处理当日涨幅排行
+            if (todayData && todayData.data && todayData.data.diff) {
+                todayData.data.diff.forEach((item, index) => {
+                    const code = item.f12;
+                    const changePct = parseFloat(item.f3) || 0;
+                    const gain5d = parseFloat(item.f127) || 0;
+                    // 当日涨幅>3%的也加入候选（覆盖低涨幅但已接近异动线的股票如莱伯泰科）
+                if (changePct >= 3 && !stockMap.has(code)) {
+                        stockMap.set(code, {
+                            code: code,
+                            name: item.f14,
+                            price: parseFloat(item.f2) || 0,
+                            changePercent: changePct,
+                            market: item.f13,
+                            secid: item.f13 + '.' + code,
+                            gain5d: gain5d,
+                            source: '当日涨幅榜'
+                        });
+                    }
+                });
+            }
+
+            if (stockMap.size === 0) {
+                console.warn('未获取到候选股票');
+                return [];
+            }
+
+            const result = Array.from(stockMap.values());
+            console.log(`获取候选股票: ${result.length}只（5日涨幅榜+当日涨幅榜合并去重）`);
+            return result;
+
+        } catch (error) {
+            console.error('获取候选股票失败:', error.message);
+            throw error;
+        }
     }
 
     /**
-     * 生成模拟K线数据
-     * 模拟接近异动线的股票，部分涨幅接近但未达到阈值
-     */
-    function generateMockKline(secid) {
-        const klines = [];
-        let price = 10 + Math.random() * 30;
-
-        // 随机决定该股票的上涨力度
-        const intensity = Math.random();
-        let trend;
-        if (intensity < 0.2) {
-            trend = 0.06;
-        } else if (intensity < 0.4) {
-            trend = 0.035;
-        } else if (intensity < 0.7) {
-            trend = 0.02;
-        } else {
-            trend = 0.005;
-        }
-
-        for (let i = 40; i >= 1; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            if (date.getDay() === 0 || date.getDay() === 6) continue;
-
-            const change = (Math.random() - 0.35) * 0.1 + trend;
-            price = price * (1 + change);
-
-            const open = price * (1 + (Math.random() - 0.5) * 0.03);
-            const close = price;
-            const high = Math.max(open, close) * (1 + Math.random() * 0.02);
-            const low = Math.min(open, close) * (1 - Math.random() * 0.02);
-            const volume = Math.floor(10000 + Math.random() * 50000);
-            const amount = Math.floor(volume * price);
-            const amplitude = ((high - low) / low * 100).toFixed(2);
-            const changePercent = (change * 100).toFixed(2);
-            const changeAmount = (close - open).toFixed(2);
-            const turnover = (Math.random() * 5).toFixed(2);
-
-            const dateStr = date.toISOString().split('T')[0];
-            klines.push([
-                dateStr,
-                open.toFixed(2), close.toFixed(2),
-                high.toFixed(2), low.toFixed(2),
-                volume, amount,
-                amplitude, changePercent, changeAmount, turnover
-            ].join(','));
-        }
-
-        return {
-            data: {
-                klines: klines
-            }
-        };
-    }
-
-    // ===== 实际API方法 =====
-
-    /**
-     * 获取A股涨幅排行榜
-     * @param {number} topN - 获取前N只股票
-     * @returns {Promise<Array>} 股票列表
-     */
-    async function getTopGainStocks(topN = 100) {
-        const url = CLIST_BASE +
-            '?pn=1' +
-            '&pz=' + topN +
-            '&po=1' +
-            '&np=1' +
-            '&ut=' + UT +
-            '&fltt=2' +
-            '&invt=2' +
-            '&fid=f3' +
-            '&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23' +
-            '&fields=f12,f14,f2,f3,f13' +
-            '&_t=' + Date.now();
-
-        let data = await request(url);
-        // 数据结构校验失败时，尝试降级到模拟数据
-        if (!data || !data.data || !data.data.diff) {
-            if (!useMock) {
-                console.warn('API返回数据格式异常，切换到模拟数据模式');
-                useMock = true;
-                data = await mockRequest(url);
-            }
-            if (!data || !data.data || !data.data.diff) {
-                throw new Error('获取涨幅排行数据失败');
-            }
-        }
-
-        return data.data.diff.map((item, index) => ({
-            rank: index + 1,
-            code: item.f12,
-            name: item.f14,
-            price: parseFloat(item.f2),
-            changePercent: parseFloat(item.f3),
-            market: item.f13,
-            secid: item.f13 + '.' + item.f12
-        }));
-    }
-
-    /**
-     * 获取个股日K线数据（前复权）
+     * 获取个股日K线数据（前复权），带localStorage缓存
      * @param {string} secid - 股票ID (格式: 市场编号.股票代码)
      * @param {number} limit - 获取K线数量
      * @returns {Promise<Array>} K线数据数组
      */
     async function getStockKline(secid, limit = 40) {
+        // 尝试从缓存读取
+        const cached = getKlineCache(secid);
+        if (cached) {
+            return cached;
+        }
+
         const url = KLINE_BASE +
             '?secid=' + secid +
             '&ut=' + UT +
@@ -275,11 +418,23 @@ const StockAPI = (function () {
             '&lmt=' + limit +
             '&_t=' + Date.now();
 
-        const data = await request(url);
-        if (!data || !data.data || !data.data.klines) {
+        try {
+            const data = await request(url);
+            if (!data || !data.data || !data.data.klines) {
+                return [];
+            }
+            const klines = mapKlineData(data);
+            // 写入缓存
+            setKlineCache(secid, klines);
+            return klines;
+        } catch (error) {
+            console.warn('获取K线失败:', secid, error.message);
             return [];
         }
+    }
 
+    /** 映射K线数据为统一格式 */
+    function mapKlineData(data) {
         return data.data.klines.map(line => {
             const parts = line.split(',');
             return {
@@ -299,58 +454,177 @@ const StockAPI = (function () {
     }
 
     /**
-     * 批量获取K线数据（带并发控制）
+     * 批量获取K线数据（逐个请求+间隔，避免东方财富限流）
      * @param {Array} secids - 股票ID数组
-     * @param {number} concurrency - 最大并发数
+     * @param {number} concurrency - 并发数（实际为1，逐个请求更稳定）
      * @param {Function} onProgress - 进度回调 (completed, total)
      * @returns {Promise<Map>} secid -> klines 映射
      */
-    async function batchGetKline(secids, concurrency = 6, onProgress = null) {
+    async function batchGetKline(secids, concurrency = 2, onProgress = null) {
         const result = new Map();
-        let completed = 0;
         const total = secids.length;
+        let completed = 0;
 
-        for (let i = 0; i < total; i += concurrency) {
-            const batch = secids.slice(i, i + concurrency);
-            const promises = batch.map(async (secid) => {
-                try {
-                    const klines = await getStockKline(secid);
-                    result.set(secid, klines);
-                } catch (e) {
-                    console.warn('获取K线失败:', secid, e.message);
-                    result.set(secid, []);
-                }
-                completed++;
-                if (onProgress) {
-                    onProgress(completed, total);
-                }
-            });
-            await Promise.all(promises);
+        for (let i = 0; i < total; i++) {
+            try {
+                const klines = await getStockKline(secids[i]);
+                result.set(secids[i], klines);
+            } catch (e) {
+                console.warn('获取K线失败:', secids[i], e.message);
+                result.set(secids[i], []);
+            }
+            completed++;
+            if (onProgress) onProgress(completed, total);
+
+            // 每个请求之间加间隔，避免触发东方财富限流
+            if (i < total - 1 && requestInterval > 0) {
+                await new Promise(r => setTimeout(r, requestInterval));
+            }
         }
 
         return result;
     }
 
+    // ===== 基准指数配置 =====
+    // 不同板块对应的基准指数secid（东方财富格式：市场编号.指数代码）
+    const INDEX_MAP = {
+        'sh_main': '1.000002',   // 沪市主板 → 上证A股指数
+        'sz_main': '0.399107',   // 深市主板 → 深证A指
+        'cyb':     '0.399102',   // 创业板 → 创业板综合指数
+        'kcb':     '1.000688'    // 科创板 → 科创50指数
+    };
+
+    // 指数K线缓存前缀
+    const INDEX_CACHE_PREFIX = 'unusual_index_';
+
     /**
-     * 检查是否正在使用模拟数据
-     * @returns {boolean}
+     * 根据股票代码判断对应的基准指数secid
+     * @param {string} code - 股票代码
+     * @returns {string} 基准指数secid
      */
-    function isUsingMock() {
-        return useMock;
+    function getBenchmarkIndexSecid(code) {
+        if (!code) return INDEX_MAP['sz_main'];
+        // 创业板：30开头
+        if (code.startsWith('30')) return INDEX_MAP['cyb'];
+        // 科创板：68开头
+        if (code.startsWith('68')) return INDEX_MAP['kcb'];
+        // 北证：8/4开头（暂用上证A股指数）
+        if (code.startsWith('8') || code.startsWith('4')) return INDEX_MAP['sh_main'];
+        // 沪市主板：60开头
+        if (code.startsWith('60')) return INDEX_MAP['sh_main'];
+        // 深市主板：00开头
+        if (code.startsWith('00')) return INDEX_MAP['sz_main'];
+        // 默认深证A指
+        return INDEX_MAP['sz_main'];
     }
 
     /**
-     * 重置模拟模式，重新尝试使用真实API
+     * 获取基准指数日K线数据（前复权），带localStorage缓存
+     * @param {string} secid - 指数secid (如 '0.399107')
+     * @param {number} limit - 获取K线数量
+     * @returns {Promise<Array>} K线数据数组
      */
-    function resetMock() {
-        useMock = false;
+    async function getIndexKline(secid, limit = 40) {
+        // 尝试从缓存读取
+        const cached = getKlineCache(INDEX_CACHE_PREFIX + secid);
+        if (cached) {
+            return cached;
+        }
+
+        const url = KLINE_BASE +
+            '?secid=' + secid +
+            '&ut=' + UT +
+            '&fields1=f1,f2,f3,f4,f5,f6' +
+            '&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61' +
+            '&klt=101' +
+            '&fqt=1' +
+            '&end=20500101' +
+            '&lmt=' + limit +
+            '&_t=' + Date.now();
+
+        try {
+            const data = await request(url);
+            if (!data || !data.data || !data.data.klines) {
+                return [];
+            }
+            const klines = mapKlineData(data);
+            // 写入缓存（使用指数缓存前缀）
+            setKlineCache(INDEX_CACHE_PREFIX + secid, klines);
+            return klines;
+        } catch (error) {
+            console.warn('获取指数K线失败:', secid, error.message);
+            return [];
+        }
     }
+
+    /**
+     * 批量获取所有需要的基准指数K线数据
+     * 根据候选股票列表自动识别需要哪些指数
+     * @param {Array} stocks - 候选股票列表
+     * @param {number} limit - K线数量
+     * @returns {Promise<Map>} secid -> klines 映射（指数K线）
+     */
+    async function getBenchmarkIndices(stocks, limit = 40) {
+        // 收集所有需要的指数secid
+        const indexSecids = new Set();
+        stocks.forEach(stock => {
+            indexSecids.add(getBenchmarkIndexSecid(stock.code));
+        });
+
+        console.log('需要获取基准指数:', Array.from(indexSecids).join(', '));
+
+        const indexMap = new Map();
+        for (const secid of indexSecids) {
+            try {
+                const klines = await getIndexKline(secid, limit);
+                indexMap.set(secid, klines);
+                // 请求间隔
+                if (requestInterval > 0) {
+                    await new Promise(r => setTimeout(r, requestInterval));
+                }
+            } catch (e) {
+                console.warn('获取指数K线失败:', secid, e.message);
+                indexMap.set(secid, []);
+            }
+        }
+
+        return indexMap;
+    }
+
+    /** 获取当前请求模式描述 */
+    function getRequestMode() {
+        const idx = PROXY_CONFIG.currentProxyIndex;
+        if (idx === -1) return '代理(主)';
+        return `代理(备用${idx + 1})`;
+    }
+
+    /** 获取请求间隔(ms) */
+    function getRequestInterval() {
+        return requestInterval;
+    }
+
+    /** 设置请求间隔(ms) */
+    function setRequestInterval(ms) {
+        requestInterval = Math.max(0, Math.min(5000, parseInt(ms) || 500));
+    }
+
+    // 初始化时加载代理配置
+    loadProxyConfig();
 
     return {
-        getTopGainStocks,
+        getCandidateStocks,
         getStockKline,
         batchGetKline,
-        isUsingMock,
-        resetMock
+        getIndexKline,
+        getBenchmarkIndices,
+        getBenchmarkIndexSecid,
+        getRequestMode,
+        getRequestInterval,
+        setRequestInterval,
+        getProxyConfig,
+        setProxyConfig,
+        clearAllCache,
+        getResultCache,
+        setResultCache
     };
 })();

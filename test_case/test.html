@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>异动计算测试</title>
+    <style>
+        body { font-family: monospace; background: #1a1a2e; color: #e0e0e0; padding: 20px; }
+        .pass { color: #10b981; }
+        .fail { color: #ef4444; }
+        h1 { color: #3b82f6; }
+        h2 { color: #8b5cf6; margin-top: 30px; }
+        pre { background: #16213e; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        #summary { font-size: 18px; margin-top: 20px; padding: 15px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>异动计算测试 - 对比同花顺标准值</h1>
+    <div id="output"></div>
+    <div id="summary"></div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/calculator.js"></script>
+    <script src="test_calculator.js"></script>
+    <script src="test_precise.js"></script>
+    <script>
+        // 重写console.log以输出到页面
+        const output = document.getElementById('output');
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+
+        function appendToPage(text, className) {
+            const pre = document.createElement('pre');
+            pre.className = className || '';
+            pre.textContent = text;
+            output.appendChild(pre);
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const text = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
+            let cls = '';
+            if (text.includes('[PASS]')) cls = 'pass';
+            if (text.includes('[FAIL]')) cls = 'fail';
+            appendToPage(text, cls);
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            appendToPage('WARN: ' + args.join(' '), 'fail');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            appendToPage('ERROR: ' + args.join(' '), 'fail');
+        };
+
+        // 运行测试
+        const result = UnusualTestPrecise.runAll();
+
+        // 显示汇总
+        const summary = document.getElementById('summary');
+        summary.style.background = result.failed > 0 ? '#7f1d1d' : '#064e3b';
+        summary.innerHTML = `<strong>总计: ${result.total}项 | 通过: <span class="pass">${result.passed}</span> | 失败: <span class="fail">${result.failed}</span></strong>`;
+    </script>
+</body>
+</html>

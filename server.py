@@ -30,10 +30,29 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
     """简化日志的静态文件处理器"""
 
     def log_message(self, format, *args):
-        # 只打印非静态资源请求的日志
-        path = args[0].split()[1] if args else ''
+        # 静默处理：过滤静态资源日志，且兼容send_error的HTTPStatus参数
+        try:
+            raw = args[0]
+            path = (raw.split()[1] if isinstance(raw, str) else '') if args else ''
+        except (IndexError, AttributeError):
+            path = ''
+        # 过滤静态资源和favicon请求
         if not any(path.endswith(ext) for ext in ['.css', '.js', '.png', '.ico', '.jpg']):
             sys.stderr.write("[http] %s\n" % (format % args))
+
+    def do_GET(self):
+        """处理GET请求，对缺失资源返回204而非404（避免控制台报错）"""
+        f = self.send_head()
+        if f:
+            try:
+                self.copyfile(f, self.wfile)
+                f.close()
+            except Exception:
+                f.close()
+        elif self.path == '/favicon.ico':
+            # favicon缺失时返回空204，不打印错误
+            self.send_response(204)
+            self.end_headers()
 
 
 class ReusableHTTPServer(http.server.HTTPServer):

@@ -1,12 +1,30 @@
 /**
  * 异动计算核心算法模块
  *
- * 异动规则：
- * - 100异动：近10个交易日收盘价涨幅累计达到100%
- * - 200异动：近30个交易日收盘价涨幅累计达到200%
+ * 异动规则（交易所官方规则）：
+ * - 100异动：连续10个交易日内日收盘价格涨跌幅偏离值累计达到+100%
+ * - 200异动：连续30个交易日内日收盘价格涨跌幅偏离值累计达到+200%
  *
- * 涨幅计算方式：窗口期内最低收盘价作为基准价，
- * 当前价相对基准价的涨幅 = (当前价 - 基准价) / 基准价
+ * 偏离值计算（官方公式）：
+ * - 偏离值 = 个股区间涨幅 - 对应基准指数区间涨幅
+ * - 区间涨幅 = (区间末收盘价 / 区间初收盘价 - 1)
+ * - 正向异动取区间内最低收盘价作为区间初价格（滚动窗口内找最低点）
+ *
+ * 基准指数映射：
+ * - 沪市主板 → 上证A股指数(1.000002)
+ * - 深市主板 → 深证A指(0.399107)
+ * - 创业板 → 创业板综合指数(0.399102)
+ * - 科创板 → 科创50指数(1.000688)
+ *
+ * 不同板块涨停幅度：
+ * - 主板：10%
+ * - 创业板/科创板：20%
+ * - 北证：30%
+ *
+ * 可触发性过滤：
+ * - T+0日：触发值 <= 当日涨停幅度 才有可能触发
+ * - T+N日：触发值 <= (1+涨停幅度)^(N+1) - 1 才有可能触发
+ * - 只有至少一天可触发的股票才展示
  */
 const UnusualCalculator = (function () {
 
@@ -16,176 +34,389 @@ const UnusualCalculator = (function () {
         { name: '200异动', windowDays: 30, threshold: 2.0, tagClass: 'tag-badge-200' }
     ];
 
+    // 板块涨停幅度映射（根据股票代码判断）
+    const LIMIT_UP_MAP = {
+        '30': 0.20,   // 创业板
+        '68': 0.20,   // 科创板
+        '8': 0.30,    // 北证
+        '4': 0.30,    // 北证（老三板转板）
+        'default': 0.10  // 主板
+    };
+
+    /**
+     * 根据股票代码判断涨停幅度
+     * @param {string} code - 股票代码
+     * @returns {number} 涨停幅度（如0.10表示10%）
+     */
+    function getLimitUpRate(code) {
+        if (!code) return LIMIT_UP_MAP['default'];
+        if (code.startsWith('30') || code.startsWith('68')) return LIMIT_UP_MAP['30'];
+        if (code.startsWith('8') || code.startsWith('4')) return LIMIT_UP_MAP['8'];
+        return LIMIT_UP_MAP['default'];
+    }
+
+    /**
+     * 计算T+N天的最大可能涨幅（连续涨停）
+     * @param {number} limitUpRate - 涨停幅度（如0.10）
+     * @param {number} days - 天数（T+0=1天，T+1=2天...）
+     * @returns {number} 最大可能涨幅百分比
+     */
+    function getMaxPossibleGain(limitUpRate, days) {
+        // 连续涨停N天的总涨幅 = (1+L)^N - 1
+        return ((1 + limitUpRate) ** days - 1) * 100;
+    }
+
+    /**
+     * 判断触发值在某天是否可触发（是否在涨停限制内）
+     * @param {number} triggerValue - 触发值（百分比）
+     * @param {number} limitUpRate - 涨停幅度
+     * @param {number} dayOffset - 天数偏移（0=当日）
+     * @returns {boolean}
+     */
+    function isTriggerAchievable(triggerValue, limitUpRate, dayOffset) {
+        if (triggerValue === null || triggerValue === undefined) return false;
+        if (triggerValue === 0) return true; // 已触发
+        const maxGain = getMaxPossibleGain(limitUpRate, dayOffset + 1);
+        return triggerValue <= maxGain;
+    }
+
+    /**
+     * 计算区间偏离值（核心公式，与同花顺/交易所一致）
+     *
+     * 偏离值 = 个股区间涨幅 - 指数区间涨幅
+     * 其中：
+     * - 个股区间涨幅 = (个股当前价 / 个股区间最低价 - 1)
+     * - 指数区间涨幅 = (指数当前价 / 指数对应日期的价格 - 1)
+     *
+     * 注意：指数的区间初价格取与个股最低价同一交易日的指数收盘价
+     *
+     * @param {Array} stockPrices - 个股窗口期收盘价数组
+     * @param {Array} indexPrices - 指数窗口期收盘价数组（与个股同长度、同日期对齐）
+     * @param {number} currentPrice - 个股当前收盘价
+     * @param {number} currentIndexPrice - 指数当前收盘价
+     * @returns {Object} { deviation, stockGain, indexGain, basePriceIndex, trendDays }
+     */
+    function calcDeviation(stockPrices, indexPrices, currentPrice, currentIndexPrice) {
+        if (!stockPrices || stockPrices.length === 0) {
+            return { deviation: 0, stockGain: 0, indexGain: 0, basePriceIndex: -1, trendDays: 0 };
+        }
+
+        // 如果没有指数数据，退化为纯个股涨幅计算（兼容旧逻辑）
+        const hasIndexData = indexPrices && indexPrices.length > 0 && currentIndexPrice > 0;
+
+        // 找窗口内个股最低收盘价的位置
+        let minIdx = 0;
+        let minPrice = stockPrices[0];
+        for (let i = 1; i < stockPrices.length; i++) {
+            if (stockPrices[i] < minPrice) {
+                minPrice = stockPrices[i];
+                minIdx = i;
+            }
+        }
+
+        const basePrice = minPrice;
+
+        // 个股区间涨幅
+        const stockGain = (currentPrice - basePrice) / basePrice;
+
+        let indexGain = 0;
+        let indexBasePrice = 0;
+
+        if (hasIndexData) {
+            // 指数对应日期的收盘价（取与个股最低价同一交易日的指数收盘价）
+            indexBasePrice = (indexPrices.length > minIdx && indexPrices[minIdx] > 0)
+                ? indexPrices[minIdx]
+                : currentIndexPrice;
+
+            // 指数区间涨幅
+            if (indexBasePrice > 0) {
+                indexGain = (currentIndexPrice - indexBasePrice) / indexBasePrice;
+            }
+        }
+
+        // 偏离值 = 个股涨幅 - 指数涨幅
+        const deviation = stockGain - indexGain;
+
+        // 趋势天数：从最低价到当前价经过的交易日数
+        let trendDays = 0;
+        for (let i = stockPrices.length - 1; i >= 0; i--) {
+            if (i === minIdx) break;
+            trendDays++;
+        }
+
+        return {
+            deviation,
+            stockGain,
+            indexGain,
+            basePriceIndex: minIdx,
+            basePrice,
+            indexBasePrice,
+            trendDays
+        };
+    }
+
     /**
      * 计算单条异动规则下，未来各天的触发涨幅限制
      *
-     * 核心逻辑：
-     * - 基准价 = 窗口期内最低收盘价
-     * - 当前涨幅 = (最新收盘价 - 基准价) / 基准价
-     * - 触发限制 = 阈值 - 当前涨幅（还需考虑滑动窗口效应）
+     * 核心逻辑（与同花顺一致）：
+     * - 偏离值 = 个股区间涨幅 - 指数区间涨幅
+     * - 触发条件：偏离值 >= 阈值
+     * - 触发所需个股涨幅 = 满足偏离值>=阈值时，个股还需涨多少
+     *
+     * 触发值计算：
+     * 设个股还需涨幅x，则：
+     *   新个股涨幅 = (1 + stockGain) * (1 + x) - 1
+     *   新偏离值 = 新个股涨幅 - indexGain
+     *   要求 新偏离值 >= threshold
+     *   即 (1 + stockGain) * (1 + x) - 1 - indexGain >= threshold
+     *   (1 + x) >= (1 + threshold + indexGain) / (1 + stockGain)
+     *   x >= (1 + threshold + indexGain) / (1 + stockGain) - 1
+     *
+     * 触发值 = x * 100（百分比）
      *
      * 滑动窗口效应：
      * - T+N天后，窗口最旧的N天价格会滑出窗口
      * - 如果滑出的价格中有基准价，则基准价会升高（取窗口内新的最低价）
-     * - 基准价升高意味着当前涨幅减小，触发限制变大（更宽松）
+     * - 基准价升高意味着个股涨幅减小，偏离值减小，触发值变大（更难触发）
      *
-     * @param {Array} klines - K线数据数组（从旧到新排序），每项需含 close 字段
+     * @param {Array} klines - K线数据数组（从旧到新排序），每项需含 close, date 字段
+     * @param {Array} indexKlines - 基准指数K线数据（与个股同日期对齐）
      * @param {Object} rule - 异动规则 { windowDays, threshold }
      * @param {number} forwardDays - 提前天数（如5表示计算T+0到T+4）
-     * @returns {Object} { triggered: boolean, triggers: [T+0触发值, T+1触发值, ...], currentGain: 当前涨幅 }
+     * @returns {Object} { triggered, triggers, currentGain, indexGain, deviation, basePrice, trendDays }
      */
-    function calcRuleTriggers(klines, rule, forwardDays) {
-        const prices = klines.map(k => k.close);
+    function calcRuleTriggers(klines, indexKlines, rule, forwardDays) {
+        const stockPrices = klines.map(k => k.close);
         const windowSize = rule.windowDays;
         const threshold = rule.threshold;
 
+        // 构建指数价格映射（日期 -> 收盘价）
+        const indexPriceMap = new Map();
+        if (indexKlines && indexKlines.length > 0) {
+            indexKlines.forEach(k => indexPriceMap.set(k.date, k.close));
+        }
+
         // 需要足够的历史数据
-        if (prices.length < windowSize) {
+        if (stockPrices.length < windowSize) {
             return {
                 triggered: false,
                 triggers: new Array(forwardDays).fill(null),
-                currentGain: null
+                currentGain: null,
+                indexGain: null,
+                deviation: null,
+                basePrice: null,
+                trendDays: 0
             };
         }
 
         // 取窗口期内的价格（最近windowSize个交易日）
-        const windowPrices = prices.slice(-windowSize);
-        const currentPrice = windowPrices[windowPrices.length - 1];
+        const windowStockPrices = stockPrices.slice(-windowSize);
+        const currentPrice = windowStockPrices[windowStockPrices.length - 1];
 
-        // 当前窗口基准价（窗口内最低价）
-        const currentBasePrice = Math.min(...windowPrices);
+        // 获取窗口期对应的指数收盘价
+        const windowDates = klines.slice(-windowSize).map(k => k.date);
+        const windowIndexPrices = windowDates.map(d => indexPriceMap.get(d) || 0);
+        const currentIndexPrice = windowIndexPrices[windowIndexPrices.length - 1];
 
-        // 当前涨幅
-        const currentGain = (currentPrice - currentBasePrice) / currentBasePrice;
+        // 计算当前偏离值
+        const deviationResult = calcDeviation(windowStockPrices, windowIndexPrices, currentPrice, currentIndexPrice);
 
         // 是否已触发异动
-        const triggered = currentGain >= threshold;
+        const triggered = deviationResult.deviation >= threshold;
 
         // 计算T+0到T+(forwardDays-1)的触发限制
         const triggers = [];
         for (let dayOffset = 0; dayOffset < forwardDays; dayOffset++) {
-            const triggerValue = calcDayTrigger(prices, windowSize, threshold, dayOffset);
+            const triggerValue = calcDayTrigger(
+                klines, indexPriceMap, windowSize, threshold, dayOffset
+            );
             triggers.push(triggerValue);
         }
 
         return {
             triggered,
             triggers,
-            currentGain
+            currentGain: deviationResult.deviation,  // 偏离值作为currentGain
+            stockGain: deviationResult.stockGain,     // 个股涨幅
+            indexGain: deviationResult.indexGain,     // 指数涨幅
+            deviation: deviationResult.deviation,     // 偏离值
+            basePrice: deviationResult.basePrice,
+            indexBasePrice: deviationResult.indexBasePrice,
+            trendDays: deviationResult.trendDays
         };
     }
 
     /**
      * 计算未来第N天的异动触发涨幅限制
      *
-     * @param {Array} allPrices - 全部历史收盘价（从旧到新）
+     * 触发值 = 个股还需涨幅百分比
+     * 公式：x = (1 + threshold + indexGain) / (1 + stockGain) - 1
+     *
+     * @param {Array} klines - 全部K线数据（从旧到新）
+     * @param {Map} indexPriceMap - 指数日期->收盘价映射
      * @param {number} windowSize - 窗口天数
      * @param {number} threshold - 异动阈值(1.0或2.0)
      * @param {number} dayOffset - 未来第几天(0=当日)
-     * @returns {number|null} 触发涨幅限制百分比，null表示数据不足，0表示已触发
+     * @returns {number|null} 触发所需个股涨幅百分比，null表示数据不足，0表示已触发
      */
-    function calcDayTrigger(allPrices, windowSize, threshold, dayOffset) {
-        const len = allPrices.length;
+    function calcDayTrigger(klines, indexPriceMap, windowSize, threshold, dayOffset) {
+        const stockPrices = klines.map(k => k.close);
+        const len = stockPrices.length;
         if (len < windowSize) return null;
 
-        const currentPrice = allPrices[len - 1];
+        const currentPrice = stockPrices[len - 1];
+        const currentDate = klines[len - 1].date;
 
         if (dayOffset === 0) {
             // 当日：直接用当前窗口计算
-            const windowPrices = allPrices.slice(-windowSize);
-            const basePrice = Math.min(...windowPrices);
-            const currentGain = (currentPrice - basePrice) / basePrice;
+            const windowStockPrices = stockPrices.slice(-windowSize);
+            const windowDates = klines.slice(-windowSize).map(k => k.date);
+            const windowIndexPrices = windowDates.map(d => indexPriceMap.get(d) || 0);
+            const currentIndexPrice = windowIndexPrices[windowIndexPrices.length - 1];
 
-            if (currentGain >= threshold) return 0;
+            const deviationResult = calcDeviation(windowStockPrices, windowIndexPrices, currentPrice, currentIndexPrice);
 
-            // 触发所需涨幅 = (阈值 - 当前涨幅) * 100
-            return Math.max(0, (threshold - currentGain) * 100);
+            if (deviationResult.deviation >= threshold) return 0;
+
+            // 触发所需个股涨幅
+            // x = (1 + threshold + indexGain) / (1 + stockGain) - 1
+            const triggerX = (1 + threshold + deviationResult.indexGain) / (1 + deviationResult.stockGain) - 1;
+            return Math.max(0, triggerX * 100);
         }
 
         // T+N天：考虑滑动窗口效应
-        // N天后，窗口将滑过最旧的N天，加入未来N天
-        // 关键：假设未来N天价格 = 当前价（保守估计，即未来价格不变）
-        // 则滑动后的窗口 = [原窗口第N个到最后, 当前价重复N次]
-
-        // 滑动后窗口的起始索引
+        // 假设未来N天个股价格 = 当前价（保守估计）
         const slideCount = Math.min(dayOffset, windowSize);
         const newWindowStart = len - windowSize + slideCount;
 
-        // 如果滑动后数据不足，返回null
         if (newWindowStart < 0) return null;
 
-        // 滑动后的窗口价格 = 历史剩余部分 + 当前价(假设未来价格不变)
-        const remainingPrices = allPrices.slice(newWindowStart);
-        const futurePrices = new Array(dayOffset).fill(currentPrice);
-        const slidWindow = [...remainingPrices, ...futurePrices].slice(-windowSize);
+        // 滑动后的窗口：去掉最旧的slideCount天，加上未来的dayOffset天
+        const remainingStockPrices = stockPrices.slice(newWindowStart);
+        const futureStockPrices = new Array(dayOffset).fill(currentPrice);
+        const slidStockWindow = [...remainingStockPrices, ...futureStockPrices].slice(-windowSize);
 
-        // 滑动后的基准价
-        const slidBasePrice = Math.min(...slidWindow);
+        // 滑动后的窗口日期：去掉最旧的slideCount天，加上未来的dayOffset天
+        const remainingDates = klines.slice(newWindowStart).map(k => k.date);
+        // 未来日期用占位符（指数价格用当前指数价格代替）
+        const futureDatePlaceholder = '__future__';
+        const slidDates = [...remainingDates, ...new Array(dayOffset).fill(futureDatePlaceholder)].slice(-windowSize);
 
-        // 滑动后的当前涨幅（价格不变，但基准价可能变了）
-        const slidGain = (currentPrice - slidBasePrice) / slidBasePrice;
+        // 获取滑动窗口对应的指数价格
+        const slidIndexPrices = slidDates.map(d => {
+            if (d === futureDatePlaceholder) return indexPriceMap.get(currentDate) || 0;
+            return indexPriceMap.get(d) || 0;
+        });
+        const slidCurrentIndexPrice = slidIndexPrices[slidIndexPrices.length - 1];
 
-        if (slidGain >= threshold) return 0;
+        // 计算滑动后的偏离值
+        const deviationResult = calcDeviation(slidStockWindow, slidIndexPrices, currentPrice, slidCurrentIndexPrice);
 
-        // 触发所需涨幅
-        return Math.max(0, (threshold - slidGain) * 100);
+        if (deviationResult.deviation >= threshold) return 0;
+
+        // 触发所需个股涨幅
+        const triggerX = (1 + threshold + deviationResult.indexGain) / (1 + deviationResult.stockGain) - 1;
+        return Math.max(0, triggerX * 100);
     }
 
     /**
      * 计算单只股票的完整异动分析结果
+     * 同时计算100异动和200异动
      *
-     * @param {Object} stock - 股票基本信息 { code, name, changePercent, secid }
+     * @param {Object} stock - 股票基本信息 { code, name, changePercent, secid, gain5d }
      * @param {Array} klines - K线数据
+     * @param {Array} indexKlines - 基准指数K线数据（与个股同日期对齐）
      * @param {number} forwardDays - 提前天数
+     * @param {number} tradeDayOffset - 交易日偏移量（收盘后=1，交易时间=0）
      * @returns {Object} 异动分析结果
      */
-    function analyzeStock(stock, klines, forwardDays = 5) {
+    function analyzeStock(stock, klines, indexKlines, forwardDays, tradeDayOffset) {
+        forwardDays = forwardDays || 5;
+        tradeDayOffset = tradeDayOffset || 0;
         const allRuleResults = [];
 
         for (const rule of RULES) {
-            const calcResult = calcRuleTriggers(klines, rule, forwardDays);
+            const calcResult = calcRuleTriggers(klines, indexKlines, rule, forwardDays);
             allRuleResults.push({
                 ruleName: rule.name,
                 tagClass: rule.tagClass,
+                windowDays: rule.windowDays,
+                threshold: rule.threshold,
                 ...calcResult
             });
         }
 
-        // 只保留最接近触发的那种异动（当日触发值最小的规则）
-        // 如果某规则已触发(触发值=0)，优先保留未触发的规则
-        // 如果都已触发或都未触发，取触发值最小的
-        let dominantRule = allRuleResults[0];
-        for (let i = 1; i < allRuleResults.length; i++) {
-            const curr = allRuleResults[i];
-            const domTrigger = dominantRule.triggers[0];
-            const currTrigger = curr.triggers[0];
+        // 获取涨停幅度
+        const limitUpRate = getLimitUpRate(stock.code);
 
-            if (domTrigger === null && currTrigger !== null) {
-                dominantRule = curr;
-            } else if (domTrigger !== null && currTrigger !== null) {
-                // 都有值：优先取未触发的(>0)，再取最小的
-                if (domTrigger === 0 && currTrigger > 0) {
-                    dominantRule = curr;
-                } else if (domTrigger > 0 && currTrigger > 0 && currTrigger < domTrigger) {
-                    dominantRule = curr;
-                } else if (domTrigger === 0 && currTrigger === 0) {
-                    // 都已触发，保留当前
+        // tradeDayOffset处理（同花顺模式）：
+        // 关键发现：同花顺在收盘后预测下一个交易日时，T+0（目标日当天）不滑动窗口，
+        // 直接用当前最新K线窗口计算触发值。T+1才开始考虑滑动窗口效应。
+        // 这样保证了预测日当天的触发值与实际当日数据一致。
+        //
+        // 示例：金安国纪6.12收盘后预测6.15
+        // - 同花顺6.15的"当日触发"=9.24%（=6.12当天的触发值，不滑动窗口）
+        // - 本项目旧逻辑滑动窗口后变成10.49%（误差13.4%），导致与同花顺不一致
+        //
+        // 修正：tradeDayOffset仅作为显示偏移，不影响T+0的计算窗口
+        if (tradeDayOffset > 0) {
+            for (const ruleResult of allRuleResults) {
+                // 不再截取triggers数组，直接使用T+0到T+(forwardDays-1)
+                // （T+0=目标日当天，不滑动窗口；T+1及以后才考虑滑动）
+
+                // 偏离值也保持当前窗口的计算结果，不滑动重算
+                // （同花顺显示的"当前幅度"就是当前最新窗口的偏离值）
+            }
+            // 注意：旧逻辑曾在此处滑动窗口重算偏离值和截取triggers，
+            // 已移除以对齐同花顺标准
+        }
+
+        // 找最紧急的规则（未触发中触发值最小且可触发的）
+        let dominantRule = allRuleResults[0];
+        let minAchievableTrigger = Infinity;
+
+        for (const ruleResult of allRuleResults) {
+            const trigger0 = ruleResult.triggers[0];
+
+            // 已触发的优先级最低（已发生，不需要预警）
+            if (trigger0 === 0) continue;
+
+            // 触发值最小且当日可触发的
+            if (trigger0 !== null && trigger0 > 0 && trigger0 < minAchievableTrigger) {
+                minAchievableTrigger = trigger0;
+                dominantRule = ruleResult;
+            }
+        }
+
+        // 如果没有未触发的规则，取第一个已触发的
+        if (minAchievableTrigger === Infinity) {
+            for (const ruleResult of allRuleResults) {
+                if (ruleResult.triggered) {
+                    dominantRule = ruleResult;
+                    break;
                 }
             }
         }
 
-        // 只保留最接近触发的规则
-        const results = [dominantRule];
+        // 判断是否有可触发的风险（加强过滤：只看T+0和T+1）
+        // 原因：T+2及以后需要连续多天涨停才能触发，实际可能性极低
+        // 例如：主板10%涨停，触发值17.77%需连续2天涨停(21%)才可能，但概率很低
+        // 只保留T+0或T+1至少有一天可触发的股票，过滤掉"理论上可能但实际不可能"的情况
+        let hasAchievableRisk = false;
+        const checkDays = Math.min(2, forwardDays); // 只检查前2天(T+0和T+1)
+        for (const ruleResult of allRuleResults) {
+            for (let day = 0; day < checkDays; day++) {
+                const trigger = ruleResult.triggers[day];
+                if (isTriggerAchievable(trigger, limitUpRate, day)) {
+                    hasAchievableRisk = true;
+                    break;
+                }
+            }
+            if (hasAchievableRisk) break;
+        }
 
-        // 判断是否有风险：当日触发值 <= 30%
-        const hasRisk = dominantRule.triggers[0] !== null &&
-                        dominantRule.triggers[0] > 0 &&
-                        dominantRule.triggers[0] <= 30;
-
-        // 紧急程度
-        const urgency = (dominantRule.triggers[0] !== null && dominantRule.triggers[0] > 0)
-            ? dominantRule.triggers[0]
-            : null;
+        // 紧急程度：取dominantRule的当日触发值
+        const urgency = dominantRule.triggers[0];
 
         // 获取最新日期
         const latestDate = klines.length > 0 ? klines[klines.length - 1].date : '';
@@ -195,42 +426,63 @@ const UnusualCalculator = (function () {
             name: stock.name,
             secid: stock.secid,
             changePercent: stock.changePercent,
+            gain5d: stock.gain5d || null,
+            limitUpRate: limitUpRate,
             date: latestDate,
-            rules: results,
-            hasRisk,
-            urgency
+            rules: allRuleResults,
+            hasAchievableRisk,
+            urgency,
+            dominantRule: dominantRule.ruleName
         };
     }
 
     /**
-     * 批量分析股票异动
+     * 批量分析股票严重异动
      *
      * @param {Array} stocks - 股票基本信息数组
      * @param {Map} klineMap - secid -> klines 映射
+     * @param {Map} indexKlineMap - 指数secid -> klines 映射
      * @param {number} forwardDays - 提前天数
-     * @param {boolean} onlyRisk - 是否仅返回有风险的股票
+     * @param {boolean} onlyAchievable - 是否仅返回有可触发风险的股票
+     * @param {number} tradeDayOffset - 交易日偏移量（收盘后=1，交易时间=0）
      * @returns {Array} 异动分析结果数组（按紧急程度排序）
      */
-    function analyzeAll(stocks, klineMap, forwardDays = 5, onlyRisk = true) {
+    function analyzeAll(stocks, klineMap, indexKlineMap, forwardDays, onlyAchievable, tradeDayOffset) {
+        tradeDayOffset = tradeDayOffset || 0;
         const analysisResults = [];
 
         for (const stock of stocks) {
             const klines = klineMap.get(stock.secid) || [];
-            if (klines.length < 10) continue; // 数据不足，跳过
+            if (klines.length < 10) continue;
 
-            const result = analyzeStock(stock, klines, forwardDays);
+            // 获取该股票对应的基准指数K线
+            const indexSecid = StockAPI.getBenchmarkIndexSecid(stock.code);
+            const indexKlines = (indexKlineMap && indexKlineMap.get(indexSecid)) || [];
 
-            if (onlyRisk && !result.hasRisk) continue;
+            const result = analyzeStock(stock, klines, indexKlines, forwardDays, tradeDayOffset);
+
+            // 调试日志：输出每只股票的分析结果摘要
+            if (result.rules && result.rules.length > 0) {
+                const r100 = result.rules.find(r => r.ruleName === '100异动');
+                const r200 = result.rules.find(r => r.ruleName === '200异动');
+                const dev100 = r100 ? (r100.deviation * 100).toFixed(2) + '%' : '--';
+                const dev200 = r200 ? (r200.deviation * 100).toFixed(2) + '%' : '--';
+                const trig100 = r100 && r100.triggers[0] !== null ? r100.triggers[0].toFixed(2) + '%' : '--';
+                const trig200 = r200 && r200.triggers[0] !== null ? r200.triggers[0].toFixed(2) + '%' : '--';
+                console.log(`[分析] ${stock.name}(${stock.code}) 指数:${indexSecid} 指数K线:${indexKlines.length}条 100异动:偏离${dev100}触发${trig100} 200异动:偏离${dev200}触发${trig200} 可触发:${result.hasAchievableRisk}`);
+            }
+
+            // 只保留有可触发风险的股票
+            if (onlyAchievable && !result.hasAchievableRisk) continue;
 
             analysisResults.push(result);
         }
 
-        // 排序：按紧急程度升序（urgency越小越紧急）
+        // 排序：按紧急程度升序（urgency越小越紧急，0=已触发排最后）
         analysisResults.sort((a, b) => {
-            if (a.urgency === null && b.urgency === null) return 0;
-            if (a.urgency === null) return 1;
-            if (b.urgency === null) return -1;
-            return a.urgency - b.urgency;
+            const aVal = a.urgency === 0 ? Infinity : (a.urgency || Infinity);
+            const bVal = b.urgency === 0 ? Infinity : (b.urgency || Infinity);
+            return aVal - bVal;
         });
 
         return analysisResults;
@@ -239,6 +491,10 @@ const UnusualCalculator = (function () {
     // 公开接口
     return {
         RULES,
+        getLimitUpRate,
+        getMaxPossibleGain,
+        isTriggerAchievable,
+        calcDeviation,
         calcRuleTriggers,
         calcDayTrigger,
         analyzeStock,
