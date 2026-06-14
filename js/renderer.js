@@ -200,19 +200,22 @@ const Renderer = (function () {
         if (!baseDate || !TradingCalendar) return null;
 
         try {
-            const base = new Date(baseDate + 'T00:00:00');
+            // T+0 = baseDate本身（触发值基于当日数据计算，表示"当日还需涨多少"）
+            if (dayOffset === 0) {
+                const parts = baseDate.split('-');
+                return parseInt(parts[1]) + '/' + parseInt(parts[2]);
+            }
 
-            // T+0 = baseDate的下一交易日（触发值对应"明天"需要涨多少）
-            // T+N = baseDate后的第(N+1)个交易日
+            // T+N (N>=1) = baseDate后的第N个交易日
+            const base = new Date(baseDate + 'T00:00:00');
             let current = new Date(base);
             let count = 0;
-            const targetCount = dayOffset + 1; // T+0找第1个，T+1找第2个...
 
-            while (count < targetCount && current.getFullYear() < 2100) {
+            while (count < dayOffset && current.getFullYear() < 2100) {
                 current.setDate(current.getDate() + 1);
                 if (TradingCalendar.isTradingDay(current)) {
                     count++;
-                    if (count === targetCount) {
+                    if (count === dayOffset) {
                         const m = current.getMonth() + 1;
                         const d = current.getDate();
                         return m + '/' + d;

@@ -349,26 +349,53 @@ const UnusualCalculator = (function () {
         // 获取涨停幅度
         const limitUpRate = getLimitUpRate(stock.code);
 
-        // tradeDayOffset处理（同花顺模式）：
-        // 关键发现：同花顺在收盘后预测下一个交易日时，T+0（目标日当天）不滑动窗口，
-        // 直接用当前最新K线窗口计算触发值。T+1才开始考虑滑动窗口效应。
-        // 这样保证了预测日当天的触发值与实际当日数据一致。
+        // 同花顺模式：T+N天的触发值=T+0的额外涨幅（不滑动窗口）
+        // 同花顺的"收盘涨幅达到X%将触发"始终基于当前窗口计算，
+        // 不考虑未来滑动窗口效应。
         //
-        // 示例：金安国纪6.12收盘后预测6.15
-        // - 同花顺6.15的"当日触发"=9.24%（=6.12当天的触发值，不滑动窗口）
-        // - 本项目旧逻辑滑动窗口后变成10.49%（误差13.4%），导致与同花顺不一致
-        //
-        // 修正：tradeDayOffset仅作为显示偏移，不影响T+0的计算窗口
-        if (tradeDayOffset > 0) {
-            for (const ruleResult of allRuleResults) {
-                // 不再截取triggers数组，直接使用T+0到T+(forwardDays-1)
-                // （T+0=目标日当天，不滑动窗口；T+1及以后才考虑滑动）
-
-                // 偏离值也保持当前窗口的计算结果，不滑动重算
-                // （同花顺显示的"当前幅度"就是当前最新窗口的偏离值）
+        // 示例：金安国纪6.12
+        // - T+0额外涨幅 = 9.24%（从6.12收盘价还需涨9.24%触发）
+        // - 同花顺6.15触发值 = 9.24%（=T+0额外涨幅）
+        // - calcDayTrigger(dayOffset=1)滑动窗口后=10.49%（同花顺不用这个值）
+        for (const ruleResult of allRuleResults) {
+            const trigger0Raw = ruleResult.triggers[0]; // T+0的额外涨幅
+            if (trigger0Raw !== null && trigger0Raw > 0) {
+                for (let i = 1; i < ruleResult.triggers.length; i++) {
+                    ruleResult.triggers[i] = trigger0Raw;
+                }
             }
-            // 注意：旧逻辑曾在此处滑动窗口重算偏离值和截取triggers，
-            // 已移除以对齐同花顺标准
+        }
+
+        // 将triggers从"额外涨幅"转换为"当日总涨幅"
+        // 同花顺格式："收盘涨幅达到 X% 将触发"
+        //
+        // triggers[N] = 从当前收盘价还需涨多少（额外涨幅）
+        // 同花顺触发值 = 当日总涨幅（相对前一日收盘价）
+        //
+        // 转换公式：
+        //   T+0（6.12当天）：总涨幅 = (1 + 当日涨幅) * (1 + 额外涨幅) - 1
+        //     例：金安国纪6.12涨5.99%，额外需涨9.24%→总涨幅15.78%（超10%涨停，不可触发）
+        //   T+1（6.15预测日）：总涨幅 = 额外涨幅（因为6.15涨幅从0%开始）
+        //     例：金安国纪6.15额外需涨9.24%→总涨幅9.24%
+        //
+        // 注意：T+N天的"前一日收盘价"就是当前收盘价（假设中间N-1天价格不变），
+        // 所以T+1及以后的总涨幅就等于额外涨幅
+        const dailyGainRate = (stock.changePercent || 0) / 100;
+        for (const ruleResult of allRuleResults) {
+            for (let day = 0; day < ruleResult.triggers.length; day++) {
+                if (ruleResult.triggers[day] !== null && ruleResult.triggers[day] > 0) {
+                    const additionalGainRate = ruleResult.triggers[day] / 100;
+                    let totalDailyGain;
+                    if (day === 0) {
+                        // T+0：当日已有涨幅，需复合计算
+                        totalDailyGain = ((1 + dailyGainRate) * (1 + additionalGainRate) - 1) * 100;
+                    } else {
+                        // T+1及以后：当日涨幅从0%开始，总涨幅=额外涨幅
+                        totalDailyGain = ruleResult.triggers[day];
+                    }
+                    ruleResult.triggers[day] = totalDailyGain;
+                }
+            }
         }
 
         // 找最紧急的规则（未触发中触发值最小且可触发的）
