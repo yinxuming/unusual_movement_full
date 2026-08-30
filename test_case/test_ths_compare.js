@@ -350,8 +350,9 @@ let failCount = 0;
 tests.forEach(t => {
     const status = t.passed ? 'PASS' : 'FAIL';
     if (t.passed) passCount++; else failCount++;
-    const actualStr = t.actual !== null && t.actual !== undefined ? t.actual.toFixed(2) : 'null';
-    console.log(`[${status}] ${t.name}: 期望=${t.expected.toFixed(2)}, 实际=${actualStr}`);
+    const fmtNum = v => (typeof v === 'number') ? v.toFixed(2) : String(v);
+    const actualStr = t.actual !== null && t.actual !== undefined ? fmtNum(t.actual) : 'null';
+    console.log(`[${status}] ${t.name}: 期望=${fmtNum(t.expected)}, 实际=${actualStr}`);
 });
 
 console.log(`\n总计: ${tests.length}项, 通过: ${passCount}, 失败: ${failCount}`);
@@ -359,8 +360,9 @@ console.log(`\n总计: ${tests.length}项, 通过: ${passCount}, 失败: ${failC
 if (failCount > 0) {
     console.log('\n*** 失败项详情 ***');
     tests.filter(t => !t.passed).forEach(t => {
-        const actualStr = t.actual !== null && t.actual !== undefined ? t.actual.toFixed(2) : 'null';
-        const diff = t.actual !== null ? (t.actual - t.expected).toFixed(2) : 'N/A';
-        console.log(`  [FAIL] ${t.name}: 期望=${t.expected.toFixed(2)}, 实际=${actualStr}, 差值=${diff}`);
+        const fmtNum = v => (typeof v === 'number') ? v.toFixed(2) : String(v);
+        const actualStr = t.actual !== null && t.actual !== undefined ? fmtNum(t.actual) : 'null';
+        const diff = (typeof t.actual === 'number') ? (t.actual - t.expected).toFixed(2) : 'N/A';
+        console.log(`  [FAIL] ${t.name}: 期望=${fmtNum(t.expected)}, 实际=${actualStr}, 差值=${diff}`);
     });
 }

@@ -343,12 +343,28 @@ const TradingCalendar = (function () {
         return 0;
     }
 
+    /**
+     * 获取指定日期对应的最近交易日
+     * 如果是交易日，返回该日期；如果不是（周末/节假日），往前找最近的交易日
+     * @param {string} dateStr - YYYY-MM-DD格式日期
+     * @returns {string} YYYY-MM-DD格式交易日
+     */
+    function getNearestTradeDate(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        if (isTradingDay(d)) {
+            return dateStr;
+        }
+        // 往前找最近的交易日
+        return getPreviousTradeDate(d, 1) || dateStr;
+    }
+
     return {
         ensureHolidaysLoaded,
         isTradingDay,
         getLatestTradeDate,
         getPreviousTradeDate,
         getNextTradeDate,
+        getNearestTradeDate,
         isMarketOpen,
         isMarketClosed,
         getTargetTradeDate,

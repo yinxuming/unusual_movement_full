@@ -1,12 +1,18 @@
 /**
  * 主程序入口
- * 协调API、计算器、渲染器各模块，处理用户交互
+ * 协调API、计算器、渲染器、自选模块，处理用户交互
  *
  * 新流程：
  * 1. 检查识别结果缓存（当日有效）
  * 2. 无缓存时：获取阶段涨幅候选股票 → 获取K线 → 计算异动 → 缓存结果
  * 3. 有缓存时：直接渲染缓存结果
  * 4. 点击刷新：清空缓存，强制重新获取
+ *
+ * 页面结构（左侧菜单栏三页）：
+ * - market：市场行情（原有异动监控）
+ * - watchlist：自选（Watchlist模块，二级菜单+CSV导入导出+搜索）
+ * - settings：设置（原顶部设置弹窗迁入）
+ * - tab切换状态持久化：进入首页时恢复最后一次选中的tab
  */
 const App = (function () {
 
@@ -19,10 +25,14 @@ const App = (function () {
         concurrency: 2          // API并发数
     };
 
+    // 左侧菜单tab持久化key
+    const ACTIVE_TAB_KEY = 'unusual_active_tab';
+
     // 运行状态
     let config = { ...DEFAULT_CONFIG };
     let autoRefreshTimer = null;
     let isLoading = false;
+    let selectedDate = null; // 用户选择的日期（YYYY-MM-DD），null=自动
 
     /**
      * 从localStorage加载配置
@@ -122,7 +132,13 @@ const App = (function () {
             await TradingCalendar.ensureHolidaysLoaded();
 
             // 计算交易日偏移量
-            const targetDate = TradingCalendar.getTargetTradeDate();
+            let targetDate;
+            if (selectedDate) {
+                // 用户选择了日期，取该日期对应的最近交易日
+                targetDate = TradingCalendar.getNearestTradeDate(selectedDate);
+            } else {
+                targetDate = TradingCalendar.getTargetTradeDate();
+            }
             const latestTradeDate = TradingCalendar.getLatestTradeDate();
             const tradeDayOffset = TradingCalendar.getTradeDayOffset(latestTradeDate, targetDate);
 
@@ -138,7 +154,7 @@ const App = (function () {
                 const cachedResults = StockAPI.getResultCache();
                 if (cachedResults && cachedResults.length > 0) {
                     console.log('使用缓存结果，共' + cachedResults.length + '只');
-                    Renderer.renderTable(cachedResults, config.forwardDays);
+                    Renderer.renderTable(cachedResults, config.forwardDays, targetDate);
                     updateDataInfo(cachedResults, targetDate);
                     return;
                 }
@@ -170,7 +186,7 @@ const App = (function () {
 
             // 第3步：计算异动分析（传入指数K线数据和交易日偏移量）
             Renderer.showLoading('正在计算异动分析...');
-            let results = UnusualCalculator.analyzeAll(
+            let results = UnusualCalculator.analyzeStocks(
                 stocks,
                 klineMap,
                 indexKlineMap,
@@ -181,7 +197,7 @@ const App = (function () {
 
             // 如果仅显示可触发风险股票且结果为空，尝试显示全部
             if (results.length === 0 && config.onlyRisk) {
-                results = UnusualCalculator.analyzeAll(
+                results = UnusualCalculator.analyzeStocks(
                     stocks,
                     klineMap,
                     indexKlineMap,
@@ -200,7 +216,7 @@ const App = (function () {
             if (results.length === 0) {
                 Renderer.renderEmpty('当前无股票接近异动线');
             } else {
-                Renderer.renderTable(results, config.forwardDays);
+                Renderer.renderTable(results, config.forwardDays, targetDate);
             }
 
             // 更新数据日期和请求模式
@@ -229,7 +245,12 @@ const App = (function () {
 
         // 如果目标交易日与K线日期不同，显示目标交易日
         if (targetDate && targetDate !== klineDate) {
-            dateHtml += ` → 预测: ${targetDate}`;
+            dateHtml += ` → 目标: ${targetDate}`;
+        }
+
+        // 如果用户选择了日期且不是交易日，提示实际交易日
+        if (selectedDate && selectedDate !== targetDate) {
+            dateHtml += ` <span style="color:#f59e0b;margin-left:4px">(${selectedDate}非交易日)</span>`;
         }
 
         dateHtml += ` <span style="color:#3b82f6;margin-left:8px">[${mode}]</span>`;
@@ -260,9 +281,79 @@ const App = (function () {
     }
 
     /**
+     * 初始化日期选择器
+     */
+    function initDatePicker() {
+        const datePicker = document.getElementById('datePicker');
+        // 默认设为目标交易日
+        const targetDate = TradingCalendar.getTargetTradeDate();
+        datePicker.value = targetDate;
+        selectedDate = null; // 初始为自动模式
+    }
+
+    /**
+     * 切换左侧菜单tab
+     * 主流程：更新菜单按钮态 → 切换页面显隐 → 持久化tab状态
+     * @param {string} tab - market|watchlist|settings
+     */
+    function switchTab(tab) {
+        // 更新菜单按钮激活态
+        document.querySelectorAll('.menu-item').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+        // 切换页面显隐
+        document.querySelectorAll('.main-content .page').forEach(page => {
+            page.classList.toggle('active', page.id === 'page-' + tab);
+        });
+        // 自选tab激活时通知自选模块（首次进入懒加载数据）
+        if (tab === 'watchlist' && typeof Watchlist !== 'undefined') {
+            Watchlist.onTabActivated();
+        }
+        // 记住最后一次选中的tab
+        try {
+            localStorage.setItem(ACTIVE_TAB_KEY, tab);
+        } catch (e) {
+            console.warn('保存tab状态失败:', e);
+        }
+    }
+
+    /**
+     * 初始化左侧菜单tab
+     * 恢复上次选中的tab（无记录时默认market），并绑定菜单点击事件
+     */
+    function initTabs() {
+        let saved = 'market';
+        try {
+            saved = localStorage.getItem(ACTIVE_TAB_KEY) || 'market';
+        } catch (e) { /* 忽略 */ }
+        if (!['market', 'watchlist', 'settings'].includes(saved)) saved = 'market';
+        switchTab(saved);
+
+        // 菜单点击切换
+        document.querySelectorAll('.menu-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTab(btn.dataset.tab);
+            });
+        });
+    }
+
+    /**
      * 绑定事件
      */
     function bindEvents() {
+        // 日期选择器
+        document.getElementById('datePicker').addEventListener('change', function () {
+            const val = this.value;
+            if (!val) {
+                selectedDate = null;
+            } else {
+                selectedDate = val;
+            }
+            // 清空缓存，强制刷新
+            StockAPI.clearAllCache();
+            run(true);
+        });
+
         // 刷新按钮（强制清缓存刷新）
         document.getElementById('btnRefresh').addEventListener('click', () => {
             run(true);
@@ -274,28 +365,18 @@ const App = (function () {
             run(true);
         });
 
-        // 设置面板
-        document.getElementById('btnSettings').addEventListener('click', () => {
-            initSettingsUI();
-            document.getElementById('settingsPanel').style.display = 'flex';
-        });
-
-        document.getElementById('btnCancelSettings').addEventListener('click', () => {
-            document.getElementById('settingsPanel').style.display = 'none';
-        });
-
+        // 保存设置按钮（设置已从弹窗迁入独立页面，无弹窗关闭逻辑）
         document.getElementById('btnSaveSettings').addEventListener('click', () => {
             readSettingsUI();
             saveConfig();
-            document.getElementById('settingsPanel').style.display = 'none';
+            // 保存成功反馈（按钮文字临时变化）
+            const btn = document.getElementById('btnSaveSettings');
+            const original = btn.textContent;
+            btn.textContent = '已保存';
+            setTimeout(() => { btn.textContent = original; }, 1500);
             // 配置变更后强制刷新
             startAutoRefresh();
             run(true);
-        });
-
-        // 点击遮罩关闭设置面板
-        document.querySelector('.settings-overlay').addEventListener('click', () => {
-            document.getElementById('settingsPanel').style.display = 'none';
         });
 
         // 测试代理按钮
@@ -303,11 +384,14 @@ const App = (function () {
             await testProxyConnection();
         });
 
-        // 表头排序
-        document.querySelectorAll('.stock-table th[data-sort]').forEach(th => {
-            th.addEventListener('click', () => {
-                const sortField = th.dataset.sort;
-                sortTable(sortField, th);
+        // 表头排序（每个表格的表头只排序自己的tbody，市场行情页与自选页互不影响）
+        document.querySelectorAll('.stock-table').forEach(table => {
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            table.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    sortTable(th.dataset.sort, th, tbody);
+                });
             });
         });
     }
@@ -377,16 +461,16 @@ const App = (function () {
      * 表格排序
      * @param {string} field - 排序字段
      * @param {HTMLElement} th - 表头元素
+     * @param {HTMLElement} tbody - 目标表体（支持市场行情页/自选页各自排序）
      */
-    function sortTable(field, th) {
-        const tbody = document.getElementById('stockTableBody');
+    function sortTable(field, th, tbody) {
         const rows = Array.from(tbody.querySelectorAll('tr'));
 
         if (rows.length === 0) return;
 
-        // 切换排序方向
-        const isAsc = th.classList.contains('sort-asc');
-        document.querySelectorAll('.stock-table th').forEach(h => {
+        // 切换排序方向（排序态限定在当前表格内）
+        const table = th.closest('table');
+        table.querySelectorAll('th').forEach(h => {
             h.classList.remove('sort-asc', 'sort-desc');
         });
         th.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
@@ -431,10 +515,15 @@ const App = (function () {
 
     /**
      * 初始化应用
+     * 主流程：加载配置 → 初始化渲染器/自选模块 → 恢复tab记忆 → 绑定事件 → 加载数据
      */
     function init() {
         loadConfig();
         Renderer.init();
+        Watchlist.init();       // 自选模块（内部会恢复二级菜单记忆并懒加载）
+        initTabs();             // 左侧菜单tab（恢复上次选中tab）
+        initDatePicker();
+        initSettingsUI();       // 设置页为常驻页面，初始化时同步当前配置值
         bindEvents();
         startAutoRefresh();
         run(); // 首次加载使用缓存

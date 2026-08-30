@@ -1,0 +1,1440 @@
+目标交易日: 2026-06-18, K线最新日: 2026-06-17, 偏移: 1
+inject.js:2 test inject(injectKey)! undefined
+api.js?v=15:388 获取候选股票: 82只（5日涨幅榜+当日涨幅榜合并去重）
+main.js?v=16:163 候选股票: 82只
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688519%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704771189 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688519%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704771189 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 1.688519 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300976%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704774140 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300976%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704774140 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.300976 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.605198%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704779158 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.605198%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704779158 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 1.605198 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301150%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704780020 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301150%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704780020 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.301150 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.002851%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704785209 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.002851%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704785209 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.002851 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300735%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704786978 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300735%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704786978 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 0.300735 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688551%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704787844 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688551%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704787844 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 1.688551 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300489%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704793247 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300489%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704793247 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.300489 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.600176%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704795927 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.600176%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704795927 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 1.600176 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.603989%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704796799 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.603989%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704796799 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 1.603989 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688627%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704800115 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688627%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704800115 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 1.688627 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300475%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704805318 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300475%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704805318 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 0.300475 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301021%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704806145 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301021%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704806145 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.301021 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301566%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704809253 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301566%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704809253 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.301566 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688333%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704812700 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688333%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704812700 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 1.688333 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688082%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704813553 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688082%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704813553 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 1.688082 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688720%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704828393 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688720%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704828393 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 1.688720 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688072%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704830161 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688072%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704830161 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 1.688072 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301303%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704831010 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301303%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704831010 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.301303 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301607%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704833605 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301607%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704833605 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.301607 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301580%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704835380 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301580%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704835380 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 0.301580 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300857%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704836292 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300857%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704836292 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.300857 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688548%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704840563 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.688548%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704840563 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 1.688548 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301072%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704842400 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301072%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704842400 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:431 获取K线失败: 0.301072 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300727%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704843237 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.300727%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704843237 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.300727 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301319%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704846702 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.301319%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704846702 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getStockKline @ api.js?v=15:422
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:431 获取K线失败: 0.301319 所有代理均请求失败
+getStockKline @ api.js?v=15:431
+await in getStockKline
+batchGetKline @ api.js?v=15:470
+await in batchGetKline
+run @ main.js?v=16:167
+await in run
+init @ main.js?v=16:477
+api.js?v=15:574 需要获取基准指数: 1.000688, 0.399102, 1.000002, 0.399107
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.000688%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704848744 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.000688%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704848744 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:555 获取指数K线失败: 1.000688 所有代理均请求失败
+getIndexKline @ api.js?v=15:555
+await in getIndexKline
+getBenchmarkIndices @ api.js?v=15:579
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.399102%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704849670 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.399102%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704849670 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:555 获取指数K线失败: 0.399102 所有代理均请求失败
+getIndexKline @ api.js?v=15:555
+await in getIndexKline
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://vercel-proxy-p.vercel.app/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.000002%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704853135 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:155 切换到备用代理1: https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D1.000002%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704853135 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:555 获取指数K线失败: 1.000002 所有代理均请求失败
+getIndexKline @ api.js?v=15:555
+await in getIndexKline
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.399107%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704854872 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第1次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:165  GET https://1429314495-dxb6k8oy7q.ap-beijing.tencentscf.com/proxy?target=https%3A%2F%2Fpush2his.eastmoney.com%2Fapi%2Fqt%2Fstock%2Fkline%2Fget%3Fsecid%3D0.399107%26ut%3Db2884a393a59ad64002292a3e90d46a5%26fields1%3Df1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%26fields2%3Df51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%26klt%3D101%26fqt%3D1%26end%3D20500101%26lmt%3D40%26_t%3D1781704854872 502 (Bad Gateway)
+fetchWithTimeout @ api.js?v=15:165
+proxyRequest @ api.js?v=15:130
+request @ api.js?v=15:102
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:107 代理请求失败(第2次): 代理返回HTTP 502
+request @ api.js?v=15:107
+await in request
+getIndexKline @ api.js?v=15:546
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+api.js?v=15:158 所有代理均已尝试，回到主代理
+api.js?v=15:555 获取指数K线失败: 0.399107 所有代理均请求失败
+getIndexKline @ api.js?v=15:555
+await in getIndexKline
+getBenchmarkIndices @ api.js?v=15:579
+await in getBenchmarkIndices
+run @ main.js?v=16:175
+await in run
+init @ main.js?v=16:477
+main.js?v=16:176 基准指数获取完成: 1.000688, 0.399102, 1.000002, 0.399107
+main.js?v=16:217 运行异常: TypeError: Cannot read properties of undefined (reading 'idx')
+    at findBestBasePoint (calculator.js?v=18:250:80)
+    at calcRuleTriggers (calculator.js?v=18:345:26)
+    at analyzeStock (calculator.js?v=18:504:32)
+    at Object.analyzeStocks (calculator.js?v=18:670:28)
+    at run (main.js?v=16:180:45)
+run @ main.js?v=16:217
+await in run
+init @ main.js?v=16:477

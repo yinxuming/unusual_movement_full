@@ -2,14 +2,14 @@
 本地开发服务器
 功能：托管静态文件（前端统一使用JSONP直连东方财富API，无需代理）
 启动方式：python server.py
-访问地址：http://localhost:8080
+访问地址：http://localhost:8081
 """
 import http.server
 import os
 import socket
 import sys
 
-PORT = 8080
+PORT = 8081
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
