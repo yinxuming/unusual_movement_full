@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+# GitHub Pages 自动部署工作流
+# 触发条件：main 分支推送（index.html/css/js 等静态资源变更后自动发布）
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # 支持手动触发（Actions 页面点 Run workflow）
+
+# 权限：Pages 写入权限 + 仓库内容只读
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只保留一次部署，取消进行中的旧部署
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 拉取代码
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. 配置 GitHub Pages（无需构建，纯静态站点直接上传）
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 3. 上传站点（仓库根目录即站点根目录：index.html/css/js）
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      # 4. 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

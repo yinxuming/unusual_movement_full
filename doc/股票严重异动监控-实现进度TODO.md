@@ -127,3 +127,23 @@
 
 ### 已知问题
 - 备用代理腾讯云函数DNS解析失败，自动切换主代理，不影响功能（可在设置页更换）
+
+
+## 2026-08-31 更新：v20 CSV列位置兼容修复 + IP访问 + GitHub Pages部署支持
+
+### Bug修复
+1. [x] CSV导入支持列位置不固定的表头识别：按列头文字（代码/名称/简称等）识别列索引，兼容「代码,名称」与「名称,代码」及隔列顺序，无表头时回退旧格式（名称,代码）
+2. [x] 北证920代码段判定修复：calculator/renderer/api/watchlist四处同步支持92开头（涨停幅度30%、板块标识、基准指数、BJ前缀导出）；calculator.getIndexSecid与api.getBenchmarkIndexSecid对北证返回基准指数不一致的隐患一并修复
+
+### 功能增强
+3. [x] IP地址访问：server.py已监听0.0.0.0（本机IP http://192.168.43.40:8081 验证通过），局域网设备可直接访问
+
+### GitHub Pages部署（详见 doc/GitHubPages部署指南.md）
+4. [x] 新增 .github/workflows/deploy.yml：push到main自动部署（Actions方式），YAML语法已验证
+5. [x] 新增 .gitignore：排除tmp/__pycache__/IDE文件
+6. [x] 新增 .gitattributes：GBK样本CSV标记binary防Git转码；bat/ps1保持CRLF；js/css/html统一LF
+7. [x] 部署文档：两种部署方式（Actions/branch）、验证清单、子路径说明、本地vs线上差异、常见问题（含防火墙放行命令）
+
+### 测试
+- test_case/test_csv_parse.js更新：新增表头列识别测试（代码在前/名称在前/隔列/别名）、真实文件2解析（数量按数据行数动态断言）、北证920涨停幅度判定，共48项全部PASS
+- 浏览器验证（通过IP访问）：清空数据→重新导入19只样本→普通浏览宽表渲染/北证行30%阈值/getLimitUpRate(920083)=0.3/getList=19 均通过；异动风险视图因线上代理网络波动K线请求失败（非代码问题，上轮同流程验证正常）

@@ -1,0 +1,17 @@
+# ===== 忽略本地运行产物 =====
+tmp/
+__pycache__/
+*.pyc
+
+# ===== 忽略本地数据（部署到GitHub Pages无需上传） =====
+*.log
+
+# ===== IDE / 工具 =====
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# 注意：doc/导入导出/*.csv 为测试样本数据（GBK编码），需要提交到仓库
+# （浏览器验证导入功能时通过URL获取该文件，且.gitattributes已标记为binary防转码）

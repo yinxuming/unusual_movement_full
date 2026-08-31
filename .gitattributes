@@ -1,0 +1,14 @@
+# GBK编码的CSV样本文件标记为二进制，防止Git做换行符/编码转换导致字节变化
+# （导入功能依赖GBK字节流解码，任何字节改动都会导致解码失败）
+doc/导入导出/*.csv binary
+
+# Shell脚本保持原样（bat/ps1使用CRLF换行）
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# JS/CSS/HTML 统一LF（与当前仓库一致，避免Windows检出时被转成CRLF产生大量diff）
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
